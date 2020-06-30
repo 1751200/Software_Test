@@ -10,9 +10,9 @@ def is_right(test_sample, tfunc):
 type_of_triangle = {
     0: 'Out of range',
     1: 'Not triangle',
-    2: 'Equilateral',
+    2: 'Scalene',
     3: 'Isosceles',
-    4: 'Scalene'
+    4: 'Equilateral'
 }
 
 description = r'''Enter the three sides of the triangle and determine whether they can form a triangle.

@@ -10,6 +10,7 @@ import re
 # import utils
 import triangle
 import myCalendar
+import commission
 import comm_fee
 import salesman
 import testing_tools as tools
@@ -69,14 +70,21 @@ if option == "Types of Triangles":
                          f" is expected to be {int(real_value)} ({triangle.type_of_triangle[real_value]})")
 
     if option2 == 'Boundary value analysis':
-        st.header('Boundary value analysis')
+        st.header('边界值法')
+        st.markdown(triangle.md3)
         chart_data = pd.read_csv("./triangle/三角形-边界值.csv", encoding="gbk")
         st.write(chart_data)
 
     if option2 == 'Equivalence partition method':
-        st.header('Equivalence partition method')
+        st.header('等价类法')
+        st.markdown(triangle.md1)
+        st.write(pd.read_csv("./triangle/弱一般等价类.csv"))
+        st.markdown(triangle.md2)
+        st.write(pd.read_csv("./triangle/额外弱健壮.csv"))
+        # st.markdown(r'''所有的测试用例：''')
         chart_data = pd.read_csv("./triangle/三角形-等价类.csv", encoding="gbk")
-        st.write(chart_data)
+        if st.checkbox('Show test samples'):
+            st.write(chart_data)
 
     if option2 != 'Input via textfield' and option2 != 'Problem description':
         if st.button("Test :)"):
@@ -95,7 +103,7 @@ if option == "Types of Triangles":
                     n_right = n_right + 1
                 else:
                     n_wrong = n_wrong + 1
-                    wrong_samples.append((real_value, test_value, i))
+                    wrong_samples.append((real_value, test_value, i, test_sample))
                 latest_iteration.text(
                     f'Progress: {n_sample}/{i}. Accuracy: {round(n_right / n_sample, 2) * 100}%')
                 bar.progress(i / n_sample)
@@ -110,7 +118,7 @@ if option == "Types of Triangles":
                 else:
                     st.warning(f"{n_right} passed. {n_wrong} failed.")
                 for sample in wrong_samples:
-                    st.error(f"Test #{sample[2]}: Output \'{sample[1]} ({triangle.type_of_triangle[sample[1]]})\'" +
+                    st.error(f"Test #{sample[2]}: {sample[3]} - Output \'{sample[1]} ({triangle.type_of_triangle[sample[1]]})\'" +
                              f" is expected to be \'{int(sample[0])} ({triangle.type_of_triangle[sample[0]]})\'")
 
             st.header("Analysis")
@@ -163,14 +171,26 @@ elif option == "Perpetual Calendar":
                 st.error(f"Test failed. Output {output} is expected to be {expected_output}")
 
     elif option2 == 'Boundary value analysis':
-        st.header('Boundary value analysis')
+        st.header('边界值法')
+        st.markdown(myCalendar.md1)
+        st.write(pd.read_csv("./myCalendar/基本边界值测试.csv"))
+        st.markdown(myCalendar.md2)
+        st.write(pd.read_csv("./myCalendar/健壮性边界值测试.csv"))
+        st.markdown(myCalendar.md3)
+        st.write(pd.read_csv("./myCalendar/额外测试用例.csv"))
         date_data = pd.read_csv("./myCalendar/万年历1-边界值.csv", encoding="utf-8")
-        st.write(date_data)
+        if st.checkbox('Show test samples'):
+            st.write(date_data)
 
     elif option2 == 'Equivalence partition method':
         st.header('Equivalence partition method')
+        st.markdown(myCalendar.md4)
+        st.write(pd.read_csv("./myCalendar/强一般等价类.csv"))
+        st.markdown(myCalendar.md5)
+        st.write(pd.read_csv("./myCalendar/额外弱健壮.csv"))
         date_data = pd.read_csv("./myCalendar/万年历1-等价类.csv", encoding="utf-8")
-        st.write(date_data)
+        if st.checkbox('Show test samples'):
+            st.write(date_data)
 
     else:
         st.header('Extended-entry decision table')
@@ -222,8 +242,83 @@ elif option == "Perpetual Calendar":
             st.pyplot()
 
 elif option == 'Commission':
-    st.header("Problem restatement")
-    # st.markdown(comm_fee.description)
+    option2 = st.sidebar.selectbox(
+        "How do you want to enter data?",
+        ["Description", "Boundary value analysis", 'Input via .csv file']
+    )
+    commission_data = None
+
+    if option2 == "Description":
+        st.header("Problem restatement")
+        st.markdown(commission.description)
+
+    elif option2 == "Boundary value analysis":
+        st.header("边界值法")
+        st.markdown(commission.md1)
+        st.write(pd.read_csv("./commission/基本边界值.csv"))
+        st.markdown(commission.md2)
+        st.write(pd.read_csv("./commission/设备健壮性边界.csv"))
+        st.markdown(commission.md3)
+        st.write(pd.read_csv("./commission/销售额基本边界值.csv"))
+        st.markdown(commission.md4)
+        commission_data = pd.read_csv("./commission/佣金问题-边界值.csv")
+
+    else:
+        st.header('Upload the test file')
+        uploaded_file = st.file_uploader("", type="csv")
+        if uploaded_file is not None:
+            commission_data = pd.read_csv(uploaded_file)
+        if st.checkbox('Show test samples'):
+            st.write(commission_data)
+
+    if option2 != "Description":
+        if st.button("Test :)"):
+            st.header("Test Result")
+            latest_iteration = st.empty()
+            bar = st.progress(0)
+            n_sample = commission_data.shape[0]
+            n_right, n_wrong = 0, 0
+            wrong_samples = []
+            time_start = time.time()
+            for i in range(1, n_sample + 1):
+                x = commission_data.loc[i - 1]['x']
+                y = commission_data.loc[i - 1]['y']
+                z = commission_data.loc[i - 1]['z']
+                expect = commission_data.loc[i - 1]['commission']
+                output = commission.calculate_computer_commission([x, y, z])
+                if float(expect) == output:
+                    n_right = n_right + 1
+                else:
+                    n_wrong = n_wrong + 1
+                    wrong_samples.append((output, expect, i, f'({x}, {y}, {z})'))
+                if float(expect) == -1:
+                    n_right = n_sample
+                    latest_iteration.text(
+                        f'Progress: {n_sample}/{n_sample}. Accuracy: {round(n_right / n_sample, 2) * 100}%')
+                    bar.progress(n_sample / n_sample)
+                    break
+                latest_iteration.text(
+                    f'Progress: {n_sample}/{i}. Accuracy: {round(n_right / n_sample, 2) * 100}%')
+                bar.progress(i / n_sample)
+                time.sleep(0.05)
+            time_end = time.time()
+            if n_wrong == 0:
+                text = "tests" if n_sample > 1 else "test"
+                st.success(f"{n_sample} {text} passed in {round((time_end - time_start) * 1000, 2)} ms.")
+            else:
+                if n_right == 0:
+                    st.error("All tests failed.")
+                else:
+                    st.warning(f"{n_right} passed. {n_wrong} failed.")
+                for sample in wrong_samples:
+                    st.error(f"Test #{sample[2]}: {sample[3]} - Output {sample[0]} is expected to be {sample[1]}")
+
+            st.header("Analysis")
+            labels = 'pass', 'fail'
+            sizes = [n_right, n_wrong]
+            plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
+            plt.axis('equal')
+            st.pyplot()
 
 elif option == 'Telecommunication charges':
     st.header("Problem restatement")

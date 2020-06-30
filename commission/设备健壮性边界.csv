@@ -1,0 +1,10 @@
+x,y,z,commission,sale,range type
+-1,40,45,None,None
+71,40,45,None,None
+0,40,45,None,None
+35,-1,45,None,None
+35,81,45,None,None
+35,0,45,None,None
+35,40,-1,None,None
+35,40,91,None,None
+35,40,0,None,None
