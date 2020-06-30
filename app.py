@@ -528,7 +528,7 @@ elif option == 'Transition Tree':
         st.image(atm1, "ATM 状态图", use_column_width=True)
         st.subheader("Transition Tree")
         atm2 = Image.open("./tran_tree/img/ATM2.png")
-        st.image(atm1, "ATM Transition Tree", use_column_width=True)
+        st.image(atm2, "ATM Transition Tree", use_column_width=True)
         st.subheader("状态表")
         st.markdown(tran_tree.md)
     else:
