@@ -13,13 +13,15 @@ import myCalendar
 import commission
 import comm_fee
 import salesman
+import tran_tree
+import q9
 import testing_tools as tools
 
 st.sidebar.title('Software Test')
 option = st.sidebar.selectbox(
     'Which question do you like to test?',
     ["Types of Triangles", "Perpetual Calendar", 'Commission', 'Telecommunication charges', 'Salesmen',
-     'Testing Tools & Bug Trackers'])
+     'JUnit', 'Driver & Sub', 'Testing Tools & Bug Trackers', 'Transition Tree', 'Question 9'])
 
 st.title(option)
 if option == "Types of Triangles":
@@ -111,14 +113,16 @@ if option == "Types of Triangles":
             time_end = time.time()
             if n_right == n_sample:
                 text = "tests" if n_sample > 1 else "test"
-                st.success(f"{n_right} {text} passed in {round((time_end - time_start) * 1000, 2)} ms.")
+                st.success(
+                    f"{n_sample} {text} passed in {round((time_end - time_start) * 1000 - n_sample * 50, 2)} ms.")
             else:
                 if n_right == 0:
                     st.error("All tests failed.")
                 else:
                     st.warning(f"{n_right} passed. {n_wrong} failed.")
                 for sample in wrong_samples:
-                    st.error(f"Test #{sample[2]}: {sample[3]} - Output \'{sample[1]} ({triangle.type_of_triangle[sample[1]]})\'" +
+                    st.error(f"Test #{sample[2]}: {sample[3]}" +
+                             f" - Output \'{sample[1]} ({triangle.type_of_triangle[sample[1]]})\'" +
                              f" is expected to be \'{int(sample[0])} ({triangle.type_of_triangle[sample[0]]})\'")
 
             st.header("Analysis")
@@ -193,7 +197,11 @@ elif option == "Perpetual Calendar":
             st.write(date_data)
 
     else:
-        st.header('Extended-entry decision table')
+        st.header('扩展决策表')
+        st.markdown(myCalendar.md6)
+        table = Image.open("./myCalendar/img/table.png")
+        st.image(table, "万年历扩展决策表", use_column_width=True)
+        st.markdown(myCalendar.md7)
         date_data = pd.read_csv("./myCalendar/万年历9-扩展决策表.csv", encoding="utf-8")
         st.write(date_data)
 
@@ -225,7 +233,8 @@ elif option == "Perpetual Calendar":
             time_end = time.time()
             if n_right == n_sample:
                 text = "tests" if n_sample > 1 else "test"
-                st.success(f"{n_sample} {text} passed in {round((time_end - time_start) * 1000, 2)} ms.")
+                st.success(
+                    f"{n_sample} {text} passed in {round((time_end - time_start) * 1000 - n_sample * 50, 2)} ms.")
             else:
                 if n_right == 0:
                     st.error("All tests failed.")
@@ -300,11 +309,12 @@ elif option == 'Commission':
                 latest_iteration.text(
                     f'Progress: {n_sample}/{i}. Accuracy: {round(n_right / n_sample, 2) * 100}%')
                 bar.progress(i / n_sample)
-                time.sleep(0.05)
+                time.sleep(0.01)
             time_end = time.time()
             if n_wrong == 0:
                 text = "tests" if n_sample > 1 else "test"
-                st.success(f"{n_sample} {text} passed in {round((time_end - time_start) * 1000, 2)} ms.")
+                st.success(
+                    f"{n_sample} {text} passed in {round((time_end - time_start) * 1000 - n_sample * 10, 2)} ms.")
             else:
                 if n_right == 0:
                     st.error("All tests failed.")
@@ -321,12 +331,213 @@ elif option == 'Commission':
             st.pyplot()
 
 elif option == 'Telecommunication charges':
-    st.header("Problem restatement")
-    st.markdown(comm_fee.description)
+    option2 = st.sidebar.selectbox(
+        "How do you want to enter data?",
+        ["Description", 'Input via .csv file', "Boundary value analysis",
+         'Equivalence partition method', 'Decision table method', 'Conclusion']
+    )
+    charges_data = None
+
+    if option2 == "Description":
+        st.header("Problem restatement")
+        st.markdown(comm_fee.description)
+
+    elif option2 == 'Input via .csv file':
+        st.header('Upload the test file')
+        uploaded_file = st.file_uploader("", type="csv")
+        if uploaded_file is not None:
+            charges_data = pd.read_csv(uploaded_file)
+        if st.checkbox('Show test samples'):
+            st.write(charges_data)
+
+    elif option2 == "Boundary value analysis":
+        st.markdown(comm_fee.statement)
+        st.header("边界值分析法")
+        st.markdown(comm_fee.boundary1)
+        st.write(pd.read_csv("./comm_fee/基本边界值.csv"))
+        st.markdown(comm_fee.boundary2)
+        st.write(pd.read_csv("./comm_fee/健壮性边界.csv"))
+        charges_data = pd.read_csv("./comm_fee/电信收费问题-边界值.csv")
+
+    elif option2 == 'Equivalence partition method':
+        st.markdown(comm_fee.statement)
+        st.header("等价类测试法")
+        st.markdown(comm_fee.equivalence1)
+        st.write(pd.read_csv("./comm_fee/强一般等价类.csv"))
+        st.markdown(comm_fee.equivalence2)
+        st.write(pd.read_csv("./comm_fee/额外弱健壮.csv"))
+        charges_data = pd.read_csv("./comm_fee/电信收费问题-等价类.csv")
+
+    elif option2 == 'Decision table method':
+        st.markdown(comm_fee.statement)
+        st.header("决策表测试法")
+        st.markdown(comm_fee.dt1)
+        charges_data = pd.read_csv("./comm_fee/电信收费问题-扩展决策表.csv")
+        st.write(charges_data)
+
+    else:
+        st.header("总结")
+        st.markdown(comm_fee.conclusion)
+
+    if option2 != "Description" and option2 != "Conclusion":
+        if st.button("Test :)"):
+            st.header("Test Result")
+            latest_iteration = st.empty()
+            bar = st.progress(0)
+            charges_data = charges_data.fillna(-1)
+            n_sample = charges_data.shape[0]
+            n_right, n_wrong = 0, 0
+            wrong_samples = []
+            time_start = time.time()
+            for i in range(1, n_sample + 1):
+                minutes = charges_data.loc[i - 1]['T']
+                n_overdue = charges_data.loc[i - 1]['M']
+                unpaid_fee = charges_data.loc[i - 1]['L']
+                discount = charges_data.loc[i - 1]['Discount']
+                extra_rate = charges_data.loc[i - 1]['Extra']
+                expect = charges_data.loc[i - 1]['Pay']
+                output = comm_fee.calculate_comm_fee([minutes, n_overdue, unpaid_fee, discount, extra_rate])
+                # if float(expect) == round(output, 2):
+                #     n_right = n_right + 1
+                if float(expect) - output <= 0.01:
+                    n_right = n_right + 1
+                else:
+                    n_wrong = n_wrong + 1
+                    wrong_samples.append((output, expect, i, f'{minutes, n_overdue, unpaid_fee}'))
+                latest_iteration.text(
+                    f'Progress: {n_sample}/{i}. Accuracy: {round(n_right / n_sample, 2) * 100}%')
+                bar.progress(i / n_sample)
+                time.sleep(0.01)
+            time_end = time.time()
+            if n_right == n_sample:
+                text = "tests" if n_sample > 1 else "test"
+                st.success(
+                    f"{n_sample} {text} passed in {round((time_end - time_start) * 1000 - n_sample * 10, 2)} ms.")
+            else:
+                if n_right == 0:
+                    st.error("All tests failed.")
+                else:
+                    st.warning(f"{n_right} passed. {n_wrong} failed.")
+                for sample in wrong_samples:
+                    st.error(f"Test #{sample[2]}: {sample[3]} - Output {sample[0]} is expected to be {sample[1]}")
+
+            st.header("Analysis")
+            labels = 'pass', 'fail'
+            sizes = [n_right, n_wrong]
+            plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
+            plt.axis('equal')
+            st.pyplot()
+
 
 elif option == 'Salesmen':
-    st.header("Problem restatement")
-    st.markdown(salesman.description)
+    option2 = st.sidebar.selectbox(
+        "Which section do you want to view?",
+        ["Problem restatement", "Flow chart", "Statement coverage", "Branch/Decision coverage",
+         "Simple condition coverage", "Condition determination coverage", "Multiple condition coverage"]
+    )
+    salesman_data = None
+
+    if option2 == "Problem restatement":
+        st.header("Problem restatement")
+        st.markdown(salesman.description)
+
+    elif option2 == "Flow chart":
+        st.header("Flow chart")
+        flowchart = Image.open("./salesman/img/flowchart.png")
+        st.image(flowchart, "Flow chart", use_column_width=True)
+
+    elif option2 == "Statement coverage":
+        st.header("语句覆盖")
+        st.markdown(salesman.statement)
+        salesman_data = pd.read_csv("./salesman/销售系统-语句覆盖.csv")
+
+    elif option2 == "Branch/Decision coverage":
+        st.header("判断覆盖")
+        st.markdown(salesman.branch)
+        salesman_data = pd.read_csv("./salesman/销售系统-判断覆盖.csv")
+
+    elif option2 == "Simple condition coverage":
+        st.header("条件覆盖")
+        st.markdown(salesman.condition)
+        salesman_data = pd.read_csv("./salesman/销售系统-条件覆盖.csv")
+
+    elif option2 == "Condition determination coverage":
+        st.header("判断——条件覆盖")
+        st.markdown(salesman.condition_determination)
+        salesman_data = pd.read_csv("./salesman/销售系统-判断-条件覆盖.csv")
+
+    else:
+        st.header("条件组合覆盖")
+        st.markdown(salesman.multiple_condition)
+        salesman_data = pd.read_csv("./salesman/销售系统-条件组合覆盖.csv")
+
+    if "coverage" in option2:
+        if st.button("Test :)"):
+            st.header("Test Result")
+            latest_iteration = st.empty()
+            bar = st.progress(0)
+            n_sample = salesman_data.shape[0]
+            n_right, n_wrong = 0, 0
+            wrong_samples = []
+            time_start = time.time()
+            for i in range(1, n_sample + 1):
+                sales = salesman_data.loc[i - 1]['Sales']
+                cash_ratio = salesman_data.loc[i - 1]['CashRatio']
+                cash_ratio = float(cash_ratio.strip('%'))/100
+                n_leave = salesman_data.loc[i - 1]['LeaveDays']
+                expect = salesman_data.loc[i - 1]['commission']
+                output = salesman.calculate_commission([sales, cash_ratio, n_leave])
+                if float(expect) - output <= 0.01:
+                    n_right = n_right + 1
+                else:
+                    n_wrong = n_wrong + 1
+                    wrong_samples.append((output, expect, i, f'{sales, cash_ratio, n_leave}'))
+                latest_iteration.text(
+                    f'Progress: {n_sample}/{i}. Accuracy: {round(n_right / n_sample, 2) * 100}%')
+                bar.progress(i / n_sample)
+                time.sleep(0.01)
+            time_end = time.time()
+            if n_right == n_sample:
+                text = "tests" if n_sample > 1 else "test"
+                st.success(
+                    f"{n_sample} {text} passed in {round((time_end - time_start) * 1000 - n_sample * 10, 2)} ms.")
+            else:
+                if n_right == 0:
+                    st.error("All tests failed.")
+                else:
+                    st.warning(f"{n_right} passed. {n_wrong} failed.")
+                for sample in wrong_samples:
+                    st.error(f"Test #{sample[2]}: {sample[3]} - Output {sample[0]} is expected to be {sample[1]}")
+
+            st.header("Analysis")
+            labels = 'pass', 'fail'
+            sizes = [n_right, n_wrong]
+            plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=90)
+            plt.axis('equal')
+            st.pyplot()
+
+elif option == 'Transition Tree':
+    option2 = st.sidebar.selectbox(
+        "Which section do you want to view?",
+        ["ATM", "APP Login"]
+    )
+    st.header(option2)
+    if option2 == "ATM":
+        st.subheader("状态图")
+        atm1 = Image.open("./tran_tree/img/ATM1.png")
+        st.image(atm1, "ATM 状态图", use_column_width=True)
+        st.subheader("Transition Tree")
+        atm2 = Image.open("./tran_tree/img/ATM2.png")
+        st.image(atm1, "ATM Transition Tree", use_column_width=True)
+        st.subheader("状态表")
+        st.markdown(tran_tree.md)
+    else:
+        st.subheader("状态图")
+        login1 = Image.open("./tran_tree/img/login.png")
+        st.image(login1, "APP Login 状态图", use_column_width=True)
+        st.subheader("用例")
+        login2 = Image.open("./tran_tree/img/login2.png")
+        st.image(login2, "APP Login 用例", use_column_width=True)
 
 elif option == 'Testing Tools & Bug Trackers':
     option2 = st.sidebar.selectbox(
@@ -356,3 +567,41 @@ elif option == 'Testing Tools & Bug Trackers':
         jmeter_img = Image.open("./testing_tools/img/jmeter.png")
         st.image(jmeter_img, "JMeter", use_column_width=True)
         st.markdown(tools.testing_tool_md4)
+
+elif option == 'Question 9':
+    st.header("Code")
+    st.code(q9.code, language="C")
+    st.header("控制流图")
+    dia = Image.open("./q9/img/diagram.png")
+    st.image(dia, "控制流图", use_column_width=True)
+    st.header("基路径")
+    st.markdown(q9.md)
+
+elif option == 'JUnit':
+    st.markdown(r'''`JUnit` 是一个 Java 编程语言的单元测试框架，其主要利用断言的机制来进行测试预期结果。 
+`Junit4` 中的测试代码可被执行，是因为其真正的入口是名为 `JUnitCore` 。它作为 `Junit` 的 `Facade` 模式，来对外进行交互。
+
+它主要有以下特性：
+
+- `JUnit` 提供了注释 `@Test` 等以及确定的测试方法；
+- `JUnit` 提供了断言用于测试预期的结果；
+- `Junit` 显示测试进度，如果测试是没有问题条形是绿色的，测试失败则会变成红色；
+
+JUnit 很重要的是一个提供注解的功能，常见的有以下注解：
+
+- `@Test` ：用其附着的公共无效方法（即用public修饰的void类型的方法 ）可以作为一个测试用例;
+- `@Before` ：用其附着的方法必须在类中的每个测试之前执行，以便执行测试某些必要的先决条件。比如说一些操作可能存在副作用，在进行测试前需要对其进行状态复位，以消除上次测试产生的影响。
+- `@After` ：用其附着的方法在执行每项测试后执行，如执行每一个测试后重置某些变量，删除临时变量等。''')
+
+elif option == 'Driver & Sub':
+    st.markdown('以类作为单位如何定义 `Driver` 和 `Stub`？')
+    st.header('Driver')
+    st.markdown(r'''
+- `Driver` 即相当于被测模块(类)的调用类，作为被测类的输入，以及对被测类的返回进行检验。作为测试用例的入口，可以模拟用户的数据操作行为。 
+- 举例说明: 类A为待测试模块，类B为主函数/其他类，在运行过程中调用了A，通过编写类/主函数Da模块来代替B，调用A模块进行测试。这个过程中Da就是驱动模块。''')
+    st.header('Stub')
+    st.markdown(r'''
+- `Stub` 即为被测模块需要调用的外部函数或类，通过对这些函数或类进行模拟，输出相应的预设结果，从而确保该被测模块只与自己的内部相关，而不受外部影响。 
+- 举例说明:类A为待测试模块，类C、D为其他类，A模块在运行中需要调用C、D来实现，通过编写Db、Dc来代替C、D，提供A运行过程中需要的参数，来对A进行测试。这个过程中Db、Dc就是桩模块''')
+    img = Image.open("./utils/img/DB.png")
+    st.image(img, option, use_column_width=True)
