@@ -22,21 +22,21 @@ option = st.sidebar.selectbox(
 
 st.title(option)
 if option == "Types of Triangles":
-    st.header('Description')
-    st.markdown(triangle.description)
-    image = Image.open('./triangle/img/triangle.jpg')
-    st.image(image, "Types of Triangles by Length of Sides", use_column_width=True)
-
     st.sidebar.markdown(triangle.description)
     s_image = Image.open('./triangle/img/triangle-1.png')
     st.sidebar.image(s_image, use_column_width=True)
     option2 = st.sidebar.selectbox(
         'How do you want to enter data?',
-        ['Input via .csv file', 'Input via textfield',
+        ['Problem description', 'Input via .csv file', 'Input via textfield',
             'Boundary value analysis', 'Equivalence partition method']
     )
-
     chart_data = None
+
+    if option2 == 'Problem description':
+        st.header('Description')
+        st.markdown(triangle.description)
+        image = Image.open('./triangle/img/triangle.jpg')
+        st.image(image, "Types of Triangles by Length of Sides", use_column_width=True)
 
     if option2 == 'Input via .csv file':
         st.header('Upload the test file')
@@ -78,7 +78,7 @@ if option == "Types of Triangles":
         chart_data = pd.read_csv("./triangle/三角形-等价类.csv", encoding="gbk")
         st.write(chart_data)
 
-    if option2 != 'Input via textfield':
+    if option2 != 'Input via textfield' and option2 != 'Problem description':
         if st.button("Test :)"):
             st.header("Test Result")
             latest_iteration = st.empty()
@@ -121,22 +121,23 @@ if option == "Types of Triangles":
             st.pyplot()
 
 elif option == "Perpetual Calendar":
-    st.header('Description')
-    st.markdown(r'''Outputs the date of the next day of the given date.''')
-    image = Image.open("./myCalendar/img/calendar.png")
-    st.image(image, "Calendar", use_column_width=True)
-
     st.sidebar.markdown(r'''Outputs the date of the next day of the given date.''')
     s_image = Image.open("./myCalendar/img/s_calendar.png")
     st.sidebar.image(s_image, use_column_width=True)
     option2 = st.sidebar.selectbox(
         'How do you want to enter data?',
-        ['Input via .csv file', 'Input via date picker',
+        ['Problem description', 'Input via .csv file', 'Input via date picker',
          'Boundary value analysis', 'Equivalence partition method', 'Extended-entry decision table']
     )
     date_data = None
 
-    if option2 == 'Input via .csv file':
+    if option2 == 'Problem description':
+        st.header('Description')
+        st.markdown(r'''Outputs the date of the next day of the given date.''')
+        image = Image.open("./myCalendar/img/calendar.png")
+        st.image(image, "Calendar", use_column_width=True)
+
+    elif option2 == 'Input via .csv file':
         st.header('Upload the test file')
         uploaded_file = st.file_uploader("", type="csv")
         if uploaded_file is not None:
@@ -176,7 +177,7 @@ elif option == "Perpetual Calendar":
         date_data = pd.read_csv("./myCalendar/万年历9-扩展决策表.csv", encoding="utf-8")
         st.write(date_data)
 
-    if option2 != 'Input via date picker':
+    if option2 != 'Input via date picker' and option2 != 'Problem description':
         if st.button("Test :)"):
             st.header("Test Result")
             latest_iteration = st.empty()
