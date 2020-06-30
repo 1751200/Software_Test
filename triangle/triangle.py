@@ -14,6 +14,11 @@ type_of_triangle = {
     3: 'Isosceles',
     4: 'Scalene'
 }
+
+description = r'''Enter the three sides of the triangle and determine whether they can form a triangle.
+                If so, judge the type of the triangle by the length of its sides.'''
+
+
 # 每道题的input都是一个 np.array,其中最后一个值是输出值
 #  0 不在范围
 #  1 非三角形

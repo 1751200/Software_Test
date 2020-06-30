@@ -7,7 +7,7 @@ technology and information infrastructure.
 ### [Redmine](https://www.redmine.org)
 
 **Redmine** is an open source, **web-based** project management and defect tracking 
-tool. It uses **calendar** and **Gantt chart** to assist project and progress visualization. 
+tool. It uses **myCalendar** and **Gantt chart** to assist project and progress visualization. 
 At the same time, it supports multi-project management. Redmine is a free and open source software 
 solution that provides integrated project management capabilities, problem tracking, and support 
 for multiple version control options.'''
