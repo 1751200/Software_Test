@@ -1,31 +1,66 @@
-import pandas as pd
-import numpy as np
 import math
 
-description = r'''Given a computer sales system, main unit (25 ¥ unit price, the maximum monthly sales volume is 70), 
-monitor (30 ¥ unit price, the maximum monthly sales volume is 80), peripherals (45 ¥ unit price, the maximum monthly 
-sales volume is 90); each salesperson sells at least one complete machine every month. When the variable of the host 
-of the system receives a value of -1, the system automatically counts the salesperson's total sales this month. When 
-the sales volume is less than or equal to 1000 (including 1000), a 10% commission is charged; when the sales volume is 
-between 1000-1800 (including 1800), the commission is 15%, and when the sales volume is greater than 1800, the 
-commission is charged according to 20%. Use the boundary value method to design test cases.'''
+
+# description = r'''Given a computer sales system, main unit (25 ¥ unit price, the maximum monthly sales volume is 70),
+# monitor (30 ¥ unit price, the maximum monthly sales volume is 80), peripherals (45 ¥ unit price, the maximum monthly
+# sales volume is 90); each salesperson sells at least one complete machine every month. When the variable of the host
+# of the system receives a value of -1, the system automatically counts the salesperson's total sales this month. When
+# the sales volume is less than or equal to 1000 (including 1000), a 10% commission is charged; when the sales volume is
+# between 1000-1800 (including 1800), the commission is 15%, and when the sales volume is greater than 1800, the
+# commission is charged according to 20%. Use the boundary value method to design test cases.'''
+
+
+description = r'''Study a telecommunications charging system that is closely related to our lives. The requirements are 
+described as follows:
+
+$$\text{The total monthly fee = basic monthly fee + actual call fee after discount.}$$
+
+If there is no discount, the actual call fee is calculated. The basic monthly fee is 25 yuan and the call fee per minute
+is 0.15 yuan.
+
+Whether there is a discount on the actual call charge is related to the call time (minutes) of the month and the 
+cumulative number of non-time payment from this year to this month. Cross-year unpaid fees have nothing to do with 
+discounts, but the unpaid part of the cross-year needs to pay a 5% late fee per month.
+
+There is a direct correspondence between the call minutes of the month and the discount rate and the number of non-time 
+payments in this year. If the number of non-time payments in this year exceeds the allowable value corresponding to the 
+call time of this month, the discount will be exempted and the actual call Fee calculation.
+
+The telephone fee is collected by online payment. The payment method is: Alipay or bank card (developing a simple analog 
+subsystem). After payment, a list of successful or unsuccessful payments is printed.
+
+The relationship between call time and discount rate and the number of non-payment on time is:
+
+| Minutes of calls this month | The maximum allowable non-time payment times during the talk time | Discount rate for talk time |
+| :-------------------------: | :----------------------------------------------------------: | :-------------------------: |
+|          $(0, 60]$          |                              1                               |           $1.0\%$           |
+|         $(60, 120]$         |                              2                               |           $1.5\%$           |
+|        $(120, 180]$         |                              3                               |           $2.0\%$           |
+|        $(180, 300]$         |                              3                               |           $2.5\%$           |
+|       $(300, \infty)$       |                              6                               |           $3.0\%$           |
+
+
+Test cases are designed with boundary values, equivalence classes and decision tables respectively, and a comprehensive 
+set of test cases is obtained through comprehensive analysis.'''
+
 
 def calculate_comm_fee(test_sample):
-    minutes,n_overdue,unpaid_fee,discount,extra_rate = test_sample
+    minutes, n_overdue, unpaid_fee, discount, extra_rate = test_sample
     
     max_overdue = math.ceil(minutes/60)
-    max_overdue = max_overdue if 1<= max_overdue <=6 else 6
+    max_overdue = max_overdue if 1 <= max_overdue <= 6 else 6
 
-    basic_part,comm_part = 25,0 
+    basic_part, comm_part = 25, 0
     # 逾期次数少于限额,可以享受折扣
-    if n_overdue<=max_overdue: 
-        comm_part = 0.15 * (1-discount) * minutes + unpaid_fee * extra_rate
+    if n_overdue <= max_overdue:
+        comm_part = 0.15 * (1 - discount) * minutes + unpaid_fee * extra_rate
     else:
         comm_part = 0.15 * 1 * minutes + unpaid_fee * extra_rate
     
     total_part = basic_part + comm_part
     return total_part
 
+
 if __name__ == "__main__":
-    print(calculate_comm_fee([60,0,0,0.01,0]))
-    print(calculate_comm_fee([60,6,100,0,0.05]))
+    print(calculate_comm_fee([60, 0, 0, 0.01, 0]))
+    print(calculate_comm_fee([60, 6, 100, 0, 0.05]))

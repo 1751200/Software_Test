@@ -1,1 +1,1 @@
-from testing_tools.mdcontent import bug_tracker_md1, bug_tracker_md2, bug_tracker_md3, bug_tracker_md4
+from testing_tools.mdcontent import bug_tracker_md1, bug_tracker_md2, bug_tracker_md3, bug_tracker_md4, testing_tool_md1, testing_tool_md2, testing_tool_md3, testing_tool_md4

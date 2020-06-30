@@ -11,12 +11,14 @@ import re
 import triangle
 import myCalendar
 import comm_fee
+import salesman
 import testing_tools as tools
 
 st.sidebar.title('Software Test')
 option = st.sidebar.selectbox(
     'Which question do you like to test?',
-    ["Types of Triangles", "Perpetual Calendar", 'Commission', 'Salesmen', 'Testing Tools & Bug Trackers'])
+    ["Types of Triangles", "Perpetual Calendar", 'Commission', 'Telecommunication charges', 'Salesmen',
+     'Testing Tools & Bug Trackers'])
 
 st.title(option)
 if option == "Types of Triangles":
@@ -68,13 +70,13 @@ if option == "Types of Triangles":
 
     if option2 == 'Boundary value analysis':
         st.header('Boundary value analysis')
-        # chart_data = pd.read_csv()
-        # chart_data
+        chart_data = pd.read_csv("./triangle/三角形-边界值.csv", encoding="gbk")
+        st.write(chart_data)
 
     if option2 == 'Equivalence partition method':
         st.header('Equivalence partition method')
-        # chart_data = pd.read_csv()
-        # chart_data
+        chart_data = pd.read_csv("./triangle/三角形-等价类.csv", encoding="gbk")
+        st.write(chart_data)
 
     if option2 != 'Input via textfield':
         if st.button("Test :)"):
@@ -130,7 +132,7 @@ elif option == "Perpetual Calendar":
     option2 = st.sidebar.selectbox(
         'How do you want to enter data?',
         ['Input via .csv file', 'Input via date picker',
-         'Boundary value analysis', 'Equivalence partition method']
+         'Boundary value analysis', 'Equivalence partition method', 'Extended-entry decision table']
     )
     date_data = None
 
@@ -161,12 +163,18 @@ elif option == "Perpetual Calendar":
 
     elif option2 == 'Boundary value analysis':
         st.header('Boundary value analysis')
+        date_data = pd.read_csv("./myCalendar/万年历1-边界值.csv", encoding="utf-8")
+        st.write(date_data)
 
     elif option2 == 'Equivalence partition method':
         st.header('Equivalence partition method')
+        date_data = pd.read_csv("./myCalendar/万年历1-等价类.csv", encoding="utf-8")
+        st.write(date_data)
 
     else:
-        pass
+        st.header('Extended-entry decision table')
+        date_data = pd.read_csv("./myCalendar/万年历9-扩展决策表.csv", encoding="utf-8")
+        st.write(date_data)
 
     if option2 != 'Input via date picker':
         if st.button("Test :)"):
@@ -213,8 +221,16 @@ elif option == "Perpetual Calendar":
             st.pyplot()
 
 elif option == 'Commission':
-    st.header("Commission Problem")
+    st.header("Problem restatement")
+    # st.markdown(comm_fee.description)
+
+elif option == 'Telecommunication charges':
+    st.header("Problem restatement")
     st.markdown(comm_fee.description)
+
+elif option == 'Salesmen':
+    st.header("Problem restatement")
+    st.markdown(salesman.description)
 
 elif option == 'Testing Tools & Bug Trackers':
     option2 = st.sidebar.selectbox(
@@ -234,4 +250,13 @@ elif option == 'Testing Tools & Bug Trackers':
         st.image(mantisbt_img, "MantisBT", use_column_width=True)
         st.markdown(tools.bug_tracker_md4)
     else:
-        pass
+        st.markdown(tools.testing_tool_md1)
+        selenium_img = Image.open("./testing_tools/img/Selenium.png")
+        st.image(selenium_img, "Selenium", use_column_width=True)
+        st.markdown(tools.testing_tool_md2)
+        appium_img = Image.open("./testing_tools/img/Appium.png")
+        st.image(appium_img, "Appium", use_column_width=True)
+        st.markdown(tools.testing_tool_md3)
+        jmeter_img = Image.open("./testing_tools/img/jmeter.png")
+        st.image(jmeter_img, "JMeter", use_column_width=True)
+        st.markdown(tools.testing_tool_md4)
