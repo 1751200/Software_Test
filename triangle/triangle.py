@@ -29,7 +29,11 @@ def decide_triangle_type(test_sample):
     line1, line2, line3 = test_sample
     if not (1 <= line1 <= 200 and 1 <= line2 <= 200 and 1 <= line3 <= 200):
         return 0
-    elif max(test_sample) >= sum(test_sample) - max(test_sample):
+    # elif max(test_sample) >= sum(test_sample) - max(test_sample):
+    #     return 1
+
+    # 人工注入bug
+    elif max(test_sample) > sum(test_sample) - max(test_sample):
         return 1
     else:
         lines = list(set([line1, line2, line3]))

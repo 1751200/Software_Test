@@ -75,14 +75,14 @@ if option == "Types of Triangles":
         st.header('边界值法')
         st.markdown(triangle.md3)
         chart_data = pd.read_csv("./triangle/三角形-边界值.csv", encoding="gbk")
-        st.write(chart_data)
+        st.table(chart_data)
 
     if option2 == 'Equivalence partition method':
         st.header('等价类法')
         st.markdown(triangle.md1)
-        st.write(pd.read_csv("./triangle/弱一般等价类.csv"))
+        st.table(pd.read_csv("./triangle/弱一般等价类.csv"))
         st.markdown(triangle.md2)
-        st.write(pd.read_csv("./triangle/额外弱健壮.csv"))
+        st.table(pd.read_csv("./triangle/额外弱健壮.csv"))
         # st.markdown(r'''所有的测试用例：''')
         chart_data = pd.read_csv("./triangle/三角形-等价类.csv", encoding="gbk")
         if st.checkbox('Show test samples'):
@@ -177,11 +177,11 @@ elif option == "Perpetual Calendar":
     elif option2 == 'Boundary value analysis':
         st.header('边界值法')
         st.markdown(myCalendar.md1)
-        st.write(pd.read_csv("./myCalendar/基本边界值测试.csv"))
+        st.table(pd.read_csv("./myCalendar/基本边界值测试.csv"))
         st.markdown(myCalendar.md2)
-        st.write(pd.read_csv("./myCalendar/健壮性边界值测试.csv"))
+        st.table(pd.read_csv("./myCalendar/健壮性边界值测试.csv"))
         st.markdown(myCalendar.md3)
-        st.write(pd.read_csv("./myCalendar/额外测试用例.csv"))
+        st.table(pd.read_csv("./myCalendar/额外测试用例.csv"))
         date_data = pd.read_csv("./myCalendar/万年历1-边界值.csv", encoding="utf-8")
         if st.checkbox('Show test samples'):
             st.write(date_data)
@@ -189,9 +189,9 @@ elif option == "Perpetual Calendar":
     elif option2 == 'Equivalence partition method':
         st.header('Equivalence partition method')
         st.markdown(myCalendar.md4)
-        st.write(pd.read_csv("./myCalendar/强一般等价类.csv"))
+        st.table(pd.read_csv("./myCalendar/强一般等价类.csv"))
         st.markdown(myCalendar.md5)
-        st.write(pd.read_csv("./myCalendar/额外弱健壮.csv"))
+        st.table(pd.read_csv("./myCalendar/额外弱健壮.csv"))
         date_data = pd.read_csv("./myCalendar/万年历1-等价类.csv", encoding="utf-8")
         if st.checkbox('Show test samples'):
             st.write(date_data)
@@ -203,7 +203,7 @@ elif option == "Perpetual Calendar":
         st.image(table, "万年历扩展决策表", use_column_width=True)
         st.markdown(myCalendar.md7)
         date_data = pd.read_csv("./myCalendar/万年历9-扩展决策表.csv", encoding="utf-8")
-        st.write(date_data)
+        st.table(date_data)
 
     if option2 != 'Input via date picker' and option2 != 'Problem description':
         if st.button("Test :)"):
@@ -264,11 +264,11 @@ elif option == 'Commission':
     elif option2 == "Boundary value analysis":
         st.header("边界值法")
         st.markdown(commission.md1)
-        st.write(pd.read_csv("./commission/基本边界值.csv"))
+        st.table(pd.read_csv("./commission/基本边界值.csv"))
         st.markdown(commission.md2)
-        st.write(pd.read_csv("./commission/设备健壮性边界.csv"))
+        st.table(pd.read_csv("./commission/设备健壮性边界.csv"))
         st.markdown(commission.md3)
-        st.write(pd.read_csv("./commission/销售额基本边界值.csv"))
+        st.table(pd.read_csv("./commission/销售额基本边界值.csv"))
         st.markdown(commission.md4)
         commission_data = pd.read_csv("./commission/佣金问题-边界值.csv")
 
@@ -354,18 +354,18 @@ elif option == 'Telecommunication charges':
         st.markdown(comm_fee.statement)
         st.header("边界值分析法")
         st.markdown(comm_fee.boundary1)
-        st.write(pd.read_csv("./comm_fee/基本边界值.csv"))
+        st.table(pd.read_csv("./comm_fee/基本边界值.csv"))
         st.markdown(comm_fee.boundary2)
-        st.write(pd.read_csv("./comm_fee/健壮性边界.csv"))
+        st.table(pd.read_csv("./comm_fee/健壮性边界.csv"))
         charges_data = pd.read_csv("./comm_fee/电信收费问题-边界值.csv")
 
     elif option2 == 'Equivalence partition method':
         st.markdown(comm_fee.statement)
         st.header("等价类测试法")
         st.markdown(comm_fee.equivalence1)
-        st.write(pd.read_csv("./comm_fee/强一般等价类.csv"))
+        st.table(pd.read_csv("./comm_fee/强一般等价类.csv"))
         st.markdown(comm_fee.equivalence2)
-        st.write(pd.read_csv("./comm_fee/额外弱健壮.csv"))
+        st.table(pd.read_csv("./comm_fee/额外弱健壮.csv"))
         charges_data = pd.read_csv("./comm_fee/电信收费问题-等价类.csv")
 
     elif option2 == 'Decision table method':
@@ -373,13 +373,16 @@ elif option == 'Telecommunication charges':
         st.header("决策表测试法")
         st.markdown(comm_fee.dt1)
         charges_data = pd.read_csv("./comm_fee/电信收费问题-扩展决策表.csv")
-        st.write(charges_data)
+        st.table(charges_data)
 
     else:
         st.header("总结")
         st.markdown(comm_fee.conclusion)
+        charges_data = pd.read_csv("./comm_fee/电信收费问题-综合.csv")
+        st.text("综合的测试用例：")
+        st.table(charges_data)
 
-    if option2 != "Description" and option2 != "Conclusion":
+    if option2 != "Description":
         if st.button("Test :)"):
             st.header("Test Result")
             latest_iteration = st.empty()
@@ -526,9 +529,13 @@ elif option == 'Transition Tree':
         st.subheader("状态图")
         atm1 = Image.open("./tran_tree/img/ATM1.png")
         st.image(atm1, "ATM 状态图", use_column_width=True)
+        st.write(tran_tree.state_diagram)
         st.subheader("Transition Tree")
-        atm2 = Image.open("./tran_tree/img/ATM2.png")
-        st.image(atm2, "ATM Transition Tree", use_column_width=True)
+        st.code(tran_tree.code, language='python')
+        if st.button("run"):
+            st.write(tran_tree.tran_tree(tran_tree.state_diagram))
+            atm2 = Image.open("./tran_tree/img/ATM2.png")
+            st.image(atm2, "ATM Transition Tree", use_column_width=True)
         st.subheader("状态表")
         st.markdown(tran_tree.md)
     else:
@@ -593,7 +600,7 @@ JUnit 很重要的是一个提供注解的功能，常见的有以下注解：
 - `@Before` ：用其附着的方法必须在类中的每个测试之前执行，以便执行测试某些必要的先决条件。比如说一些操作可能存在副作用，在进行测试前需要对其进行状态复位，以消除上次测试产生的影响。
 - `@After` ：用其附着的方法在执行每项测试后执行，如执行每一个测试后重置某些变量，删除临时变量等。''')
 
-elif option == 'Driver & Sub':
+elif option == 'Driver & Stub':
     st.markdown('以类作为单位如何定义 `Driver` 和 `Stub`？')
     st.header('Driver')
     st.markdown(r'''

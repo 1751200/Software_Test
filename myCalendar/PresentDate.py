@@ -11,8 +11,10 @@ class PresentDate:
             return False
 
     def is_legal(self):
+        # 注入bug
         if not (2000 <= self.year <= 2100 and 1 <= self.month <= 12 and 1 <= self.day <= 31):
-            return False
+            # return False
+            return True
         else:
             if self.month in [4, 6, 9, 11] and self.day >= 31:
                 return False
